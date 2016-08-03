@@ -53,7 +53,7 @@ export default class WebrtcSettings extends AdminSettings {
             <h3>
                 <FormattedMessage
                     id='admin.integrations.webrtc'
-                    defaultMessage='Mattermost WebRTC'
+                    defaultMessage='Mattermost WebRTC (Beta)'
                 />
             </h3>
         );
@@ -111,7 +111,7 @@ export default class WebrtcSettings extends AdminSettings {
                     helpText={
                         <FormattedMessage
                             id='admin.webrtc.gatewayAdminUrlDescription'
-                            defaultMessage='Enter https://<mattermost-webrtc-gateway-url>:<port>. Make sure you use HTTP or HTTPS in your URL depending on your server configuration.
+                            defaultMessage='Enter https://<mattermost-webrtc-gateway-url>:<port>/admin. Make sure you use HTTP or HTTPS in your URL depending on your server configuration.
                             Mattermost WebRTC uses this URL to obtain valid tokens for each peer to establish the connection.'
                         />
                     }

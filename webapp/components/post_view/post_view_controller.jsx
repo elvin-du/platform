@@ -32,6 +32,8 @@ export default class PostViewController extends React.Component {
         this.onActivate = this.onActivate.bind(this);
         this.onDeactivate = this.onDeactivate.bind(this);
 
+        this.filterPosts = this.filterPosts.bind(this);
+
         const channel = props.channel;
         let profiles = UserStore.getProfiles();
         if (channel && channel.type === Constants.DM_CHANNEL) {
@@ -44,9 +46,11 @@ export default class PostViewController extends React.Component {
             lastViewed = member.last_viewed_at;
         }
 
+        const joinLeaveEnabled = PreferenceStore.getBool(Constants.Preferences.CATEGORY_ADVANCED_SETTINGS, 'join_leave', true);
+
         this.state = {
             channel,
-            postList: PostStore.getVisiblePosts(channel.id),
+            postList: PostStore.filterPosts(channel.id, joinLeaveEnabled),
             currentUser: UserStore.getCurrentUser(),
             profiles,
             atTop: PostStore.getVisibilityAtTop(channel.id),
@@ -83,7 +87,10 @@ export default class PostViewController extends React.Component {
             previewSuffix = '_' + Utils.generateId();
         }
 
+        const joinLeaveEnabled = PreferenceStore.getBool(Constants.Preferences.CATEGORY_ADVANCED_SETTINGS, 'join_leave', true);
+
         this.setState({
+            postList: PostStore.filterPosts(this.state.channel.id, joinLeaveEnabled),
             displayNameType: PreferenceStore.get(Preferences.CATEGORY_DISPLAY_SETTINGS, 'name_format', 'false'),
             displayPostsInCenter: PreferenceStore.get(Preferences.CATEGORY_DISPLAY_SETTINGS, Preferences.CHANNEL_DISPLAY_MODE, Preferences.CHANNEL_DISPLAY_MODE_DEFAULT) === Preferences.CHANNEL_DISPLAY_MODE_CENTERED,
             compactDisplay: PreferenceStore.get(Preferences.CATEGORY_DISPLAY_SETTINGS, Preferences.MESSAGE_DISPLAY, Preferences.MESSAGE_DISPLAY_DEFAULT) === Preferences.MESSAGE_DISPLAY_COMPACT,
@@ -103,8 +110,10 @@ export default class PostViewController extends React.Component {
     }
 
     onPostsChange() {
+        const joinLeaveEnabled = PreferenceStore.getBool(Constants.Preferences.CATEGORY_ADVANCED_SETTINGS, 'join_leave', true);
+
         this.setState({
-            postList: JSON.parse(JSON.stringify(PostStore.getVisiblePosts(this.state.channel.id))),
+            postList: PostStore.filterPosts(this.state.channel.id, joinLeaveEnabled),
             atTop: PostStore.getVisibilityAtTop(this.state.channel.id)
         });
     }
@@ -152,12 +161,14 @@ export default class PostViewController extends React.Component {
                 profiles = Object.assign({}, profiles, UserStore.getDirectProfiles());
             }
 
+            const joinLeaveEnabled = PreferenceStore.getBool(Constants.Preferences.CATEGORY_ADVANCED_SETTINGS, 'join_leave', true);
+
             this.setState({
                 channel,
                 lastViewed,
                 ownNewMessage: false,
                 profiles: JSON.parse(JSON.stringify(profiles)),
-                postList: JSON.parse(JSON.stringify(PostStore.getVisiblePosts(channel.id))),
+                postList: PostStore.filterPosts(channel.id, joinLeaveEnabled),
                 displayNameType: PreferenceStore.get(Preferences.CATEGORY_DISPLAY_SETTINGS, 'name_format', 'false'),
                 displayPostsInCenter: PreferenceStore.get(Preferences.CATEGORY_DISPLAY_SETTINGS, Preferences.CHANNEL_DISPLAY_MODE, Preferences.CHANNEL_DISPLAY_MODE_DEFAULT) === Preferences.CHANNEL_DISPLAY_MODE_CENTERED,
                 compactDisplay: PreferenceStore.get(Preferences.CATEGORY_DISPLAY_SETTINGS, Preferences.MESSAGE_DISPLAY, Preferences.MESSAGE_DISPLAY_DEFAULT) === Preferences.MESSAGE_DISPLAY_COMPACT,
